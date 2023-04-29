@@ -190,7 +190,7 @@ public class TrabajoIntegradorMain {
                     ObjectMapper objectMapper = new ObjectMapper();
                     objectMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
-                    HashMap<ArrayList<String>, ArrayList<String>> infoAlumno = new HashMap<>();
+                    var infoAlumno = new HashMap<ArrayList<String>, ArrayList<String>>();
 
                     conexionDB.establecerConexion();
                     Statement llamarEstado = conexionDB.conectar.createStatement();
@@ -203,7 +203,7 @@ public class TrabajoIntegradorMain {
                         int alumnoLegajo = estadoAlumnos.getInt("legajo");
                         String mAprobadasLista = objectMapper.writeValueAsString(estadoAlumnos.getString("materias_aprobadas"));
 
-                        ArrayList<String> nombreYLegajo = new ArrayList<>();
+                        var nombreYLegajo = new ArrayList<String>();
                         nombreYLegajo.add("Nombre del Alumno: " + alumnoNombre + ", N° de Legajo: " + alumnoLegajo);
 
                         ArrayList<String> listaMateriasAprobadas = objectMapper.readValue(mAprobadasLista, ArrayList.class);
