@@ -8,7 +8,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -71,21 +70,21 @@ public class TrabajoIntegradorMain {
 
         conexionDB.cerrarConexion();
 
-        for (Map.Entry<ArrayList<String>, ArrayList<String>> entry : hmMaterias.entrySet()) {
+        hmMaterias.entrySet().forEach(entry -> {
             String llave = entry.getKey().toString().replace("[", "").replace("]", "").replace("\"", "");
             String valor = entry.getValue().toString().replace("[", "").replace("]", "").replace("\"", "");
 
             System.out.println("Nombre de la materia: " + llave);
             System.out.println("Correlativas de la materia: " + valor);
-        }
-        
-        for (Map.Entry<ArrayList<String>, ArrayList<String>> entry : infoAlumnos.entrySet()) {
+        });
+
+        infoAlumnos.entrySet().forEach(entry -> {
             String llave = entry.getKey().toString().replace("[", "").replace("]", "").replace("\"", "");
             String valor = entry.getValue().toString().replace("[", "").replace("]", "").replace("\"", "");
 
             System.out.println("Informacion del Alumno: " + llave);
             System.out.println("Materias aprobadas: " + valor);
-        }
+        });
     }
     //------------------------------------------------------------------------------------------------
 
@@ -214,10 +213,12 @@ public class TrabajoIntegradorMain {
                     }
                     conexionDB.cerrarConexion();
 
-                    for (Map.Entry<ArrayList<String>, ArrayList<String>> entry : infoAlumno.entrySet()) {
+                    infoAlumno.entrySet().stream().map(entry -> {
                         System.out.println("Informacion del Alumno: " + entry.getKey().toString().replace("[", "").replace("]", ""));
+                        return entry;
+                    }).forEachOrdered(entry -> {
                         System.out.println("Materias aprobadas: " + entry.getValue().toString().replace("[", "").replace("]", "").replace("\"", ""));
-                    }
+                    });
                 }
                 case 4 -> {
                     System.out.println("--------------------------------------");
