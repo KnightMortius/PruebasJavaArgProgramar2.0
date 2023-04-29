@@ -9,6 +9,7 @@ public class Inscripcion {
     Materia materia;
     Alumno alumno;
     Date fecha = new Date();
+    boolean aprobada;
 
     public Inscripcion(Materia materia, Alumno alumno) {
         this.materia = materia;

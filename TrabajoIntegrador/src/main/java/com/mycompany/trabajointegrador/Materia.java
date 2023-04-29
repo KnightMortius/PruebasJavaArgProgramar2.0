@@ -44,12 +44,6 @@ public class Materia {
 
     //Método de si puede o no cursar un alumno
     public Alumno puedeCursar(boolean Alumno) {
-        if (Alumno == true) {
-            System.out.println("Puede cursar");
-        } else {
-            System.out.println("No puede cursar");
-        }
-
         return null;
     }
 

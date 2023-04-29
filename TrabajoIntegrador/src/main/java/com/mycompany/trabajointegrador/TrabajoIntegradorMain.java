@@ -89,8 +89,47 @@ public class TrabajoIntegradorMain {
     //------------------------------------------------------------------------------------------------
 
     //Método para verificar si el alumno puede o no inscribirse
-    private static void verificacionInscripcion() {
+    private static void verificacionInscripcion() throws ClassNotFoundException, SQLException, JsonProcessingException {
+        Conexion conexionDB = new Conexion();
 
+        try {
+            Scanner iScan = new Scanner(System.in);
+            System.out.println("Ingrese su legajo: ");
+            int legajo = iScan.nextInt();
+            
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+            
+            var infoAlumno = new HashMap<ArrayList<String>, <ArrayList<String>();
+
+            conexionDB.establecerConexion();
+            Statement llamarEstado = conexionDB.conectar.createStatement();
+
+            ResultSet estadoInscripcion = llamarEstado.executeQuery("SELECT * FROM alumnos WHERE legajo = " + legajo);
+
+            if (estadoInscripcion.next()) {
+                String nombreAlumno = estadoInscripcion.getString("nombre");
+                int legajoAlumno = estadoInscripcion.getInt("legajo");
+                String mAprobadasLista = objectMapper.writeValueAsString(estadoInscripcion.getString("materias_aprobadas"));
+                
+                ArrayList<String> listaMateriasAprobadas = objectMapper.readValue(mAprobadasLista, ArrayList.class);
+                
+                var nombreYLegajo = new ArrayList<String>();
+                                
+                nombreYLegajo.add("Nombre del Alumno: " + nombreAlumno + ", N° de Legajo: " + legajoAlumno);
+                
+                infoAlumno.put(nombreYLegajo, listaMateriasAprobadas);
+                
+                
+            } else {
+                System.out.println("No se encontró ningún alumno con el legajo N°: " + legajo);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al consultar información del alumno: " + e.getMessage());
+        } finally {
+            conexionDB.cerrarConexion();
+        }
     }
     //------------------------------------------------------------------------------------------------
 
