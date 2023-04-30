@@ -16,6 +16,15 @@ public class Alumno {
     int legajo;
     ArrayList<String> materiasAprobadas = new ArrayList<>();
 
+    public Alumno(String nombre, int legajo) {
+        this.nombre = nombre;
+        this.legajo = legajo;
+    }
+
+    public Alumno() {
+
+    }
+
     public String getNombre() {
         return nombre;
     }
@@ -44,6 +53,5 @@ public class Alumno {
     public String toString() {
         return "Alumno{" + "nombre=" + nombre + ", legajo=" + legajo + ", materiasAprobadas=" + materiasAprobadas + '}';
     }
-
 
 }

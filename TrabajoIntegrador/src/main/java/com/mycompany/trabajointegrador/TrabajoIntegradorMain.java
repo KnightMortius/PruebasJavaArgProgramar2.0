@@ -3,8 +3,9 @@ package com.mycompany.trabajointegrador;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 import com.google.gson.Gson;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -22,145 +24,6 @@ public class TrabajoIntegradorMain {
     static String nombreLimite = "^[a-zA-Z ]{1,40}$";
     static String materiasLimite = "\\d{1,3}";
     static String materiasLetraLimite = "^[a-zA-Z ]{1,30}$";
-
-    //Método para traer los datos de SQL
-    private static void traerDatosSQL() throws SQLException, JsonProcessingException, ClassNotFoundException {
-        Alumno alumnos = new Alumno();
-        Materia materias = new Materia();
-        Conexion conexionDB = new Conexion();
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
-
-        HashMap<ArrayList<String>, ArrayList<String>> hmMaterias = new HashMap<>();
-        HashMap<ArrayList<String>, ArrayList<String>> infoAlumnos = new HashMap<>();
-
-        conexionDB.establecerConexion();
-
-        Statement estado = conexionDB.conectar.createStatement();
-
-        ResultSet aAlumnos = estado.executeQuery("SELECT * FROM alumnos");
-
-        while (aAlumnos.next()) {
-            alumnos.nombre = aAlumnos.getString("nombre");
-            alumnos.legajo = aAlumnos.getInt("legajo");
-
-            String materiasAprobadasString = objectMapper.writeValueAsString(aAlumnos.getString("materias_aprobadas"));
-
-            ArrayList<String> listaMateriasAprobadas = objectMapper.readValue(materiasAprobadasString, ArrayList.class);
-
-            ArrayList<String> nombreYLegajo = new ArrayList<>();
-            nombreYLegajo.add("Nombre del Alumno: " + alumnos.nombre + ", N° de Legajo: " + alumnos.legajo);
-
-            alumnos.setMateriasAprobadas(listaMateriasAprobadas);
-
-            infoAlumnos.put(nombreYLegajo, alumnos.getMateriasAprobadas());
-
-        }
-
-        ResultSet mMaterias = estado.executeQuery("SELECT * FROM materias");
-
-        while (mMaterias.next()) {
-            materias.nombre = mMaterias.getString("nombre");
-
-            String materiasString = objectMapper.writeValueAsString(mMaterias.getString("correlativas"));
-
-            ArrayList<String> nombreCorrelativas = objectMapper.readValue(materiasString, ArrayList.class);
-
-            materias.setCorrelativas(nombreCorrelativas);
-
-            ArrayList<String> materiaNombre = new ArrayList<>();
-
-            materiaNombre.add(materias.nombre);
-
-            hmMaterias.put(materiaNombre, materias.getCorrelativas());
-
-        }
-
-        conexionDB.cerrarConexion();
-
-        hmMaterias.entrySet().forEach(entry -> {
-            String llave = entry.getKey().toString().replace("[", "").replace("]", "").replace("\"", "");
-            String valor = entry.getValue().toString().replace("[", "").replace("]", "").replace("\"", "");
-
-            System.out.println("Nombre de la materia: " + llave);
-            System.out.println("Correlativas de la materia: " + valor + "\n");
-        });
-
-        infoAlumnos.entrySet().forEach(entry -> {
-            String llave = entry.getKey().toString().replace("[", "").replace("]", "").replace("\"", "");
-            String valor = entry.getValue().toString().replace("[", "").replace("]", "").replace("\"", "");
-
-            System.out.println("Informacion del Alumno: " + llave);
-            System.out.println("Materias aprobadas: " + valor + "\n");
-        });
-    }
-    //------------------------------------------------------------------------------------------------
-
-    //Método para verificar si el alumno puede o no inscribirse
-    private static void verificacionInscripcion() throws ClassNotFoundException, SQLException, JsonProcessingException {
-        Conexion conexionDB = new Conexion();
-
-        try {
-            Scanner iScan = new Scanner(System.in);
-            System.out.println("Ingrese su legajo: ");
-            int legajo = iScan.nextInt();
-
-            System.out.println("");
-
-            String legajoRegistro = String.valueOf(legajo);
-
-            if (legajoRegistro.matches(legajoLimite)) {
-
-                ObjectMapper objectMapper = new ObjectMapper();
-                objectMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
-
-                var infoAlumno = new HashMap<ArrayList<String>, ArrayList<String>>();
-
-                conexionDB.establecerConexion();
-                Statement llamarEstado = conexionDB.conectar.createStatement();
-
-                ResultSet estadoInscripcion = llamarEstado.executeQuery("SELECT * FROM alumnos WHERE legajo = " + legajo);
-
-                if (estadoInscripcion.next()) {
-                    String nombreAlumno = estadoInscripcion.getString("nombre");
-                    int legajoAlumno = estadoInscripcion.getInt("legajo");
-                    String mAprobadasLista = objectMapper.writeValueAsString(estadoInscripcion.getString("materias_aprobadas"));
-
-                    ArrayList<String> listaMateriasAprobadas = objectMapper.readValue(mAprobadasLista, ArrayList.class);
-
-                    var nombreYLegajo = new ArrayList<String>();
-
-                    nombreYLegajo.add(nombreAlumno + ", N° de Legajo: " + legajoAlumno);
-
-                    infoAlumno.put(nombreYLegajo, listaMateriasAprobadas);
-
-                    for (Map.Entry<ArrayList<String>, ArrayList<String>> entry : infoAlumno.entrySet()) {
-                        String llave = entry.getKey().toString().replace("[", "").replace("]", "").replace("\"", "").replace("\\", "");
-                        String valor = entry.getValue().toString().replace("[", "").replace("]", "").replace("\"", "").replace("\\", "");
-
-                        System.out.println("Nombre del Alumno: " + llave);
-                        System.out.println("Lista de Materias: " + valor);
-                    }
-                } else {
-                    System.out.println("--------------------------------------------------------");
-                    System.out.println("No se encontró ningún alumno con el legajo N°: " + legajo);
-                    System.out.println("--------------------------------------------------------");
-                }
-
-            } else {
-                System.out.println("-----------------------------------------------------------");
-                System.out.println("El legajo tiene un maximo de 5 digitos. Ingreselo de nuevo.");
-                System.out.println("-----------------------------------------------------------");
-            }
-        } catch (InputMismatchException e) {
-            System.out.println("--------------------------------");
-            System.out.println("Solo entran numeros en el legajo.");
-            System.out.println("--------------------------------");
-        }
-
-    }
-    //------------------------------------------------------------------------------------------------
 
     //Método para llamar al Menu Alumnos
     private static void menuAlumno() throws SQLException, ClassNotFoundException, JsonProcessingException {
@@ -256,19 +119,21 @@ public class TrabajoIntegradorMain {
                                             llamarEstado.executeUpdate("INSERT INTO alumnos (nombre, legajo, materias_aprobadas) VALUES (\"" + nombre + "\", + " + legajo + ", '" + materiasAprobadasJson + "');");
                                             conexionDB.cerrarConexion();
                                         } else {
+                                            conexionDB.cerrarConexion();
                                             System.out.println("--------------------------------------------------------------------------------");
                                             System.out.println("El numero de materias ingresado no coincide con el numero de materias aprobadas.");
                                             System.out.println("--------------------------------------------------------------------------------");
-                                            conexionDB.cerrarConexion();
                                         }
 
                                     } else {
+                                        conexionDB.cerrarConexion();
                                         System.out.println("------------------------------------------");
                                         System.out.println("El limite de materias es de 3 como maximo.");
                                         System.out.println("------------------------------------------");
                                     }
 
                                 } else {
+                                    conexionDB.cerrarConexion();
                                     System.out.println("-----------------------------------------------------------");
                                     System.out.println("El legajo tiene un maximo de 5 digitos. Ingreselo de nuevo.");
                                     System.out.println("-----------------------------------------------------------");
@@ -276,11 +141,13 @@ public class TrabajoIntegradorMain {
                             }
                         } catch (InputMismatchException e) {
                             menuA.next();
+                            conexionDB.cerrarConexion();
                             System.out.println("-------------------------------------------------------------------------");
                             System.out.println("Solo entran numeros en el legajo y en la cantidad de materias a ingresar.");
                             System.out.println("-------------------------------------------------------------------------");
                         }
                     } else {
+                        conexionDB.cerrarConexion();
                         System.out.println("----------------------------------------------------------------------------------");
                         System.out.println("Esta intentando ingresar un nombre demasiado largo o numeros, vuelva a intentarlo.");
                         System.out.println("----------------------------------------------------------------------------------");
@@ -324,17 +191,20 @@ public class TrabajoIntegradorMain {
 
                                 conexionDB.cerrarConexion();
                             } else {
+                                conexionDB.cerrarConexion();
                                 System.out.println("-----------------------------------------------------------");
                                 System.out.println("El legajo tiene un maximo de 5 digitos. Ingreselo de nuevo.");
                                 System.out.println("-----------------------------------------------------------");
                             }
                         } catch (InputMismatchException e) {
+                            conexionDB.cerrarConexion();
                             System.out.println("---------------------------------");
                             System.out.println("Solo entran numeros en el legajo.");
                             System.out.println("---------------------------------");
                         }
 
                     } else {
+                        conexionDB.cerrarConexion();
                         System.out.println("----------------------------------------------------------------------------------");
                         System.out.println("Esta intentando ingresar un nombre demasiado largo o numeros, vuelva a intentarlo.");
                         System.out.println("----------------------------------------------------------------------------------");
@@ -436,7 +306,7 @@ public class TrabajoIntegradorMain {
                     conexionDB.establecerConexion();
                     Statement llamarEstado = conexionDB.conectar.createStatement();
 
-                    ResultSet estadoMaterias = llamarEstado.executeQuery("SELECT * FROM materias WHERE nombre = \"" + nombre + "\"");
+                    var estadoMaterias = llamarEstado.executeQuery("SELECT * FROM materias WHERE nombre = '" + nombre + "'");
 
                     if (estadoMaterias.next()) {
                         System.out.println("--------------------------------------");
@@ -454,6 +324,7 @@ public class TrabajoIntegradorMain {
                                 String input = "";
 
                                 for (int i = 0; i < numero; i++) {
+                                    System.out.print("Nombre de la Correlativa #" + (i + 1) + ": ");
                                     input = menuM.next();
 
                                     if (input.matches(materiasLetraLimite)) {
@@ -476,11 +347,13 @@ public class TrabajoIntegradorMain {
                                 conexionDB.cerrarConexion();
                             } catch (InputMismatchException e) {
                                 menuM.nextLine();
+                                conexionDB.cerrarConexion();
                                 System.out.println("-----------------------------------------------------");
                                 System.out.println("Solo entran numeros en la cantidad de correlativas.");
                                 System.out.println("-----------------------------------------------------");
                             }
                         } else {
+                            conexionDB.cerrarConexion();
                             System.out.println("---------------------------------------------------------------");
                             System.out.println("El nombre de las materias no es tan largo y no se usan numeros.");
                             System.out.println("---------------------------------------------------------------");
@@ -508,15 +381,17 @@ public class TrabajoIntegradorMain {
                             llamarEstado.executeUpdate("DELETE FROM materias WHERE nombre = \"" + nombre + "\"");
                             conexionDB.cerrarConexion();
                         } else {
+                            conexionDB.cerrarConexion();
                             System.out.println("---------------------------------------------------------------");
                             System.out.println("El nombre de las materias no es tan largo y no se usan numeros.");
                             System.out.println("---------------------------------------------------------------");
                         }
 
                     } else {
-                        System.out.println("--------------------------------------");
+                        conexionDB.cerrarConexion();
+                        System.out.println("-----------------------------------------");
                         System.out.println("La materia no existe en la base de datos.");
-                        System.out.println("--------------------------------------");
+                        System.out.println("-----------------------------------------");
                     }
 
                 }
@@ -564,6 +439,258 @@ public class TrabajoIntegradorMain {
                 }
             }
         } while (cicloMateria != 2);
+    }
+    //------------------------------------------------------------------------------------------------
+
+    //Método para verificar si el alumno puede o no inscribirse
+    private static void verificacionInscripcion() throws ClassNotFoundException, SQLException, JsonProcessingException {
+        Conexion conexionDB = new Conexion();
+
+        Scanner iScan = new Scanner(System.in);
+        iScan.useDelimiter("\n");
+
+        try {
+            System.out.println("Ingrese su legajo: ");
+            int legajo = iScan.nextInt();
+
+            System.out.println("");
+
+            String legajoRegistro = String.valueOf(legajo);
+
+            if (legajoRegistro.matches(legajoLimite)) {
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+
+                var infoAlumno = new HashMap<ArrayList<String>, ArrayList<String>>();
+
+                conexionDB.establecerConexion();
+                Statement llamarEstado = conexionDB.conectar.createStatement();
+
+                ResultSet estadoInscripcion = llamarEstado.executeQuery("SELECT * FROM alumnos WHERE legajo = " + legajo);
+                
+                String nombre = "";
+
+                if (estadoInscripcion.next()) {
+                    String nombreAlumno = estadoInscripcion.getString("nombre");
+                    
+                    nombre = nombreAlumno;
+                    
+                    int legajoAlumno = estadoInscripcion.getInt("legajo");
+                    String mAprobadasLista = objectMapper.writeValueAsString(estadoInscripcion.getString("materias_aprobadas"));
+                    ArrayList<String> listaMateriasAprobadas = objectMapper.readValue(mAprobadasLista, ArrayList.class);
+
+                    var nombreYLegajo = new ArrayList<String>();
+
+                    nombreYLegajo.add(nombreAlumno + ", N° de Legajo: " + legajoAlumno);
+
+                    infoAlumno.put(nombreYLegajo, listaMateriasAprobadas);
+
+                    for (Map.Entry<ArrayList<String>, ArrayList<String>> entry : infoAlumno.entrySet()) {
+                        String llave = entry.getKey().toString().replace("[", "").replace("]", "").replace("\"", "").replace("\\", "");
+                        String valor = entry.getValue().toString().replace("[", "").replace("]", "").replace("\"", "").replace("\\", "");
+
+                        System.out.println("Nombre del Alumno: " + llave);
+                        System.out.println("Lista de Materias: " + valor);
+                    }
+
+                    System.out.println("");
+
+                    System.out.println("Desea inscribirse en alguna materia?: (Escriba si o no)");
+                    String decision = iScan.next().toLowerCase();
+
+                    if (decision.equals("si")) {
+                        System.out.println("-------------------------------------------------------------");
+                        System.out.println(" Mostrando lista de materias y sus respectivas correlativas: ");
+                        System.out.println("-------------------------------------------------------------");
+
+                        HashMap<String, String> hmMaterias = new HashMap<>();
+
+                        ResultSet estadoLlamarMaterias = llamarEstado.executeQuery("SELECT * FROM materias ORDER BY id");
+
+                        while (estadoLlamarMaterias.next()) {
+
+                            String materiaNombre = estadoLlamarMaterias.getString("nombre");
+                            String correlativasLista = objectMapper.writeValueAsString(estadoLlamarMaterias.getString("correlativas"));
+
+                            hmMaterias.put(materiaNombre, correlativasLista);
+                        }
+
+                        for (Iterator<Map.Entry<String, String>> it = hmMaterias.entrySet().iterator(); it.hasNext();) {
+                            Map.Entry<String, String> entry = it.next();
+                            String llave = entry.getKey().replaceAll("\\[\\]\"", "");
+                            String valor = entry.getValue().replace("[", "").replace("]", "").replace("\"", "").replace("\\", "");
+                            System.out.println("Nombre de la materia: " + llave);
+                            System.out.println("Correlativas de la materia: " + valor + "\n");
+                        }
+
+                        System.out.println("");
+                        System.out.println("Ingrese el nombre de la materia: ");
+                        String materia = iScan.next();
+
+                        if (materia.matches(materiasLetraLimite)) {
+                            System.out.println("");
+                            System.out.println("Ingrese la correlativa que tiene aprobada: ");
+                            String correlativa = iScan.next();
+
+                            if (correlativa.matches(materiasLetraLimite)) {
+                                boolean materiaEncontrada = false;
+
+                                ArrayList<String> listaMaterias = new ArrayList<>();
+
+                                Statement nuevoEstado = conexionDB.conectar.createStatement();
+
+                                ResultSet llamarTabla = nuevoEstado.executeQuery("SELECT * FROM materias WHERE nombre = \"" + materia + "\"");
+
+                                while (llamarTabla.next()) {
+                                    String correlativasJson = llamarTabla.getString("correlativas");
+
+                                    Type correlativasType = new TypeToken<List<String>>() {
+                                    }.getType();
+                                    List<String> correlativas = new Gson().fromJson(correlativasJson, correlativasType);
+
+                                    for (String listaCorrelativas : correlativas) {
+                                        if (listaCorrelativas.equals(correlativa)) {
+                                            materiaEncontrada = true;
+                                            listaMaterias.add(correlativa);
+                                        }
+                                    }
+                                }
+
+                                if (materiaEncontrada) {
+                                    Materia materias = new Materia();
+                                    Alumno alumnos = new Alumno(nombre, legajo);
+                                    
+                                    if (materias.puedeCursar(materiaEncontrada)) {
+                                        
+                                    } else {
+                                        
+                                    }
+                                    
+                                    Inscripcion nuevaInscripcion = new Inscripcion(materias, alumnos);
+                                    
+                                    nuevaInscripcion.aprobada();
+                                } else {
+                                    conexionDB.cerrarConexion();
+                                    System.out.println("-----------------------------------------");
+                                    System.out.println("La materia no existe en la base de datos.");
+                                    System.out.println("-----------------------------------------");
+                                }
+                            }
+                        } else {
+                            conexionDB.cerrarConexion();
+                            System.out.println("---------------------------------------------------------------");
+                            System.out.println("El nombre de las materias no es tan largo y no se usan numeros.");
+                            System.out.println("---------------------------------------------------------------");
+                        }
+
+                        conexionDB.cerrarConexion();
+
+                    } else if (decision.equals("no")) {
+                        conexionDB.cerrarConexion();
+                        System.out.println("--------------------");
+                        System.out.println("Volviendo al menu...");
+                        System.out.println("--------------------");
+                    } else {
+                        conexionDB.cerrarConexion();
+                        System.out.println("-----------------------------------------------");
+                        System.out.println("Respuesta por teclado inexistente o incorrecta.");
+                        System.out.println("-----------------------------------------------");
+                    }
+                } else {
+                    conexionDB.cerrarConexion();
+                    System.out.println("--------------------------------------------------------");
+                    System.out.println("No se encontró ningún alumno con el legajo N°: " + legajo);
+                    System.out.println("--------------------------------------------------------");
+                }
+
+            } else {
+                conexionDB.cerrarConexion();
+                System.out.println("-----------------------------------------------------------");
+                System.out.println("El legajo tiene un maximo de 5 digitos. Ingreselo de nuevo.");
+                System.out.println("-----------------------------------------------------------");
+            }
+        } catch (InputMismatchException e) {
+            conexionDB.cerrarConexion();
+            System.out.println("--------------------------------");
+            System.out.println("Solo entran numeros en el legajo.");
+            System.out.println("--------------------------------");
+        }
+
+    }
+    //------------------------------------------------------------------------------------------------
+
+    //Método para traer los datos de SQL
+    private static void traerDatosSQL() throws SQLException, JsonProcessingException, ClassNotFoundException {
+        Alumno alumnos = new Alumno();
+        Materia materias = new Materia();
+        Conexion conexionDB = new Conexion();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+
+        HashMap<ArrayList<String>, ArrayList<String>> hmMaterias = new HashMap<>();
+        HashMap<ArrayList<String>, ArrayList<String>> infoAlumnos = new HashMap<>();
+
+        conexionDB.establecerConexion();
+
+        Statement estado = conexionDB.conectar.createStatement();
+
+        ResultSet aAlumnos = estado.executeQuery("SELECT * FROM alumnos");
+
+        while (aAlumnos.next()) {
+            alumnos.nombre = aAlumnos.getString("nombre");
+            alumnos.legajo = aAlumnos.getInt("legajo");
+
+            String materiasAprobadasString = objectMapper.writeValueAsString(aAlumnos.getString("materias_aprobadas"));
+
+            ArrayList<String> listaMateriasAprobadas = objectMapper.readValue(materiasAprobadasString, ArrayList.class);
+
+            ArrayList<String> nombreYLegajo = new ArrayList<>();
+            nombreYLegajo.add("Nombre del Alumno: " + alumnos.nombre + ", N° de Legajo: " + alumnos.legajo);
+
+            alumnos.setMateriasAprobadas(listaMateriasAprobadas);
+
+            infoAlumnos.put(nombreYLegajo, alumnos.getMateriasAprobadas());
+
+        }
+
+        ResultSet mMaterias = estado.executeQuery("SELECT * FROM materias");
+
+        while (mMaterias.next()) {
+            materias.nombre = mMaterias.getString("nombre");
+
+            String materiasString = objectMapper.writeValueAsString(mMaterias.getString("correlativas"));
+
+            ArrayList<String> nombreCorrelativas = objectMapper.readValue(materiasString, ArrayList.class);
+
+            materias.setCorrelativas(nombreCorrelativas);
+
+            ArrayList<String> materiaNombre = new ArrayList<>();
+
+            materiaNombre.add(materias.nombre);
+
+            hmMaterias.put(materiaNombre, materias.getCorrelativas());
+
+        }
+
+        conexionDB.cerrarConexion();
+
+        hmMaterias.entrySet().forEach(entry -> {
+            String llave = entry.getKey().toString().replace("[", "").replace("]", "").replace("\"", "");
+            String valor = entry.getValue().toString().replace("[", "").replace("]", "").replace("\"", "");
+
+            System.out.println("Nombre de la materia: " + llave);
+            System.out.println("Correlativas de la materia: " + valor + "\n");
+        });
+
+        infoAlumnos.entrySet().forEach(entry -> {
+            String llave = entry.getKey().toString().replace("[", "").replace("]", "").replace("\"", "");
+            String valor = entry.getValue().toString().replace("[", "").replace("]", "").replace("\"", "");
+
+            System.out.println("Informacion del Alumno: " + llave);
+            System.out.println("Materias aprobadas: " + valor + "\n");
+        });
     }
     //------------------------------------------------------------------------------------------------
 
