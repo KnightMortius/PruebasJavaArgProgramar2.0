@@ -49,5 +49,4 @@ public class Conexion {
             System.out.println("No se pudo cerrar la conexion: " + e);
         }
     }
-
 }
