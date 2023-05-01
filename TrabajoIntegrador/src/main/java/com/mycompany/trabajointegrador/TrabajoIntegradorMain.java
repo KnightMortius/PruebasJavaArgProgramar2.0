@@ -133,13 +133,9 @@ public class TrabajoIntegradorMain {
                                             System.out.println("------------------------------------------");
                                         }
                                     } else {
-                                        conexionDB.establecerConexion();
-                                        System.out.println("--------------------------------------------------------------");
-                                        System.out.println("  Creando alumno \"" + nombre + "\" con legajo N°: " + legajo + "...");
-                                        System.out.println("--------------------------------------------------------------");
-
-                                        llamarEstado.executeUpdate("INSERT INTO alumnos (nombre, legajo, materias_aprobadas) VALUES (\"" + nombre + "\", + " + legajo + ");");
-                                        conexionDB.cerrarConexion();
+                                        System.out.println("---------------------------------------------------------------------");
+                                        System.out.println("Tiene que ingresar si o si una cantidad de materias con correlativas.");
+                                        System.out.println("---------------------------------------------------------------------");
                                     }
 
                                 } else {
