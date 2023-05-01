@@ -51,7 +51,7 @@ public class Alumno {
 
     @Override
     public String toString() {
-        return "Alumno{" + "nombre=" + nombre + ", legajo=" + legajo + ", materiasAprobadas=" + materiasAprobadas + '}';
+        return "Nombre del Alumno: " + nombre + ", legajo: " + legajo + ", materiasAprobadas: " + materiasAprobadas.toString().replace("]", "").replace("[", "");
     }
 
 }

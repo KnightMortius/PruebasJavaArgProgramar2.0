@@ -15,6 +15,14 @@ public class Inscripcion {
         this.materia = materia;
         this.alumno = alumno;
     }
+    
+    public boolean getAprobada() {
+        return aprobada;
+    }
+    
+    public void setAprobada(boolean aprobada) {
+        this.aprobada = aprobada;
+    }
 
     public Materia getMateria() {
         return materia;
@@ -42,11 +50,15 @@ public class Inscripcion {
 
     @Override
     public String toString() {
-        return "Inscripcion{" + "materia=" + materia + ", alumno=" + alumno + ", fecha=" + fecha + '}';
+        return "Inscripcion - " + "Materias: " + materia + "\n" + alumno + "\nFecha de creacion: " + fecha;
     }
 
     //Método de que tiene aprobada la materia
     public void aprobada() {
-        //
+        System.out.println("----------------------");
+        System.out.println("Creando inscripcion...");
+        System.out.println("----------------------");
+
+        System.out.println(toString());
     }
 }

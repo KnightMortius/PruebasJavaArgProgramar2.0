@@ -43,18 +43,22 @@ public class Materia {
 
     @Override
     public String toString() {
-        return "Materia{" + "nombre=" + nombre + ", correlativas=" + correlativas + '}';
+        return nombre + ", correlativas: " + correlativas.toString().replace("]", "").replace("[", "");
     }
 
     //Método de si puede o no cursar un alumno
-    public Alumno puedeCursar(boolean Alumno) throws SQLException, JsonProcessingException, ClassNotFoundException {
-        Conexion conexionDB = new Conexion();
-
-        System.out.println(getCorrelativas());
+    public boolean puedeCursar(boolean entrada) {
+        System.out.println("------------------------------------");
+        System.out.println("Verificando materias correlativas...");
+        System.out.println("------------------------------------");
         
-        conexionDB.cerrarConexion();
-
-        return null;
+        if (entrada) {
+            System.out.println("-------------------------------------------------");
+            System.out.println("Tiene la materia/as aprobadas. Puede inscribirse.");
+            System.out.println("-------------------------------------------------");
+        }
+        
+        return entrada;
     }
 
 }
