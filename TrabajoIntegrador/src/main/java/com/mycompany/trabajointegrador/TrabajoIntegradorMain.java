@@ -89,7 +89,6 @@ public class TrabajoIntegradorMain {
                                     String numeroMLimite = String.valueOf(numero);
 
                                     if (numero > 0) {
-
                                         if (numeroMLimite.matches(materiasLimite)) {
                                             System.out.println("Que materias aprobadas tiene?: ");
                                             ArrayList<String> materiasAprobadas = new ArrayList<>();
@@ -330,46 +329,44 @@ public class TrabajoIntegradorMain {
                                 String numeroRegistro = String.valueOf(numero);
 
                                 if (numero > 0) {
+                                    if (numeroRegistro.matches(materiasLimite)) {
 
+                                        System.out.println("Que materias desea agregar a las correlativas?");
+                                        ArrayList<String> correlativas = new ArrayList<>();
+
+                                        String input = "";
+
+                                        for (int i = 0; i < numero; i++) {
+                                            System.out.print("Nombre de la Correlativa #" + (i + 1) + ": ");
+                                            input = menuM.next();
+
+                                            if (input.matches(materiasLetraLimite)) {
+                                                correlativas.add(input);
+                                                System.out.println("--------------------------------------------------------------------------------------------------------");
+                                                System.out.println("        Añadiendo materia: " + nombre + "y su respectiva correlativa " + correlativas.get(i) + "...");
+                                                System.out.println("--------------------------------------------------------------------------------------------------------");
+                                            } else {
+                                                System.out.println("--------------------------------------------------");
+                                                System.out.println("Solo entran letras en el agregado de correlativas.");
+                                                System.out.println("--------------------------------------------------");
+                                                break;
+                                            }
+                                        }
+
+                                        String correlativasJson = new Gson().toJson(correlativas);
+
+                                        conexionDB.establecerConexion();
+                                        llamarEstado.executeUpdate("INSERT INTO materias (nombre, correlativas) VALUES(\"" + nombre + "\",'" + correlativasJson + "');");
+                                        conexionDB.cerrarConexion();
+                                    } else {
+                                        System.out.println("------------------------------------------------");
+                                        System.out.println("Solo puedes ingresar una cantidad de 3 materias.");
+                                        System.out.println("------------------------------------------------");
+                                    }
                                 } else {
                                     System.out.println("---------------------------------------------------------------------");
                                     System.out.println("Tiene que ingresar si o si una cantidad de materias con correlativas.");
                                     System.out.println("---------------------------------------------------------------------");
-                                }
-
-                                if (numeroRegistro.matches(materiasLimite)) {
-
-                                    System.out.println("Que materias desea agregar a las correlativas?");
-                                    ArrayList<String> correlativas = new ArrayList<>();
-
-                                    String input = "";
-
-                                    for (int i = 0; i < numero; i++) {
-                                        System.out.print("Nombre de la Correlativa #" + (i + 1) + ": ");
-                                        input = menuM.next();
-
-                                        if (input.matches(materiasLetraLimite)) {
-                                            correlativas.add(input);
-                                            System.out.println("--------------------------------------------------------------------------------------------------------");
-                                            System.out.println("        Añadiendo materia: " + nombre + "y su respectiva correlativa " + correlativas.get(i) + "...");
-                                            System.out.println("--------------------------------------------------------------------------------------------------------");
-                                        } else {
-                                            System.out.println("--------------------------------------------------");
-                                            System.out.println("Solo entran letras en el agregado de correlativas.");
-                                            System.out.println("--------------------------------------------------");
-                                            break;
-                                        }
-                                    }
-
-                                    String correlativasJson = new Gson().toJson(correlativas);
-
-                                    conexionDB.establecerConexion();
-                                    llamarEstado.executeUpdate("INSERT INTO materias (nombre, correlativas) VALUES(\"" + nombre + "\",'" + correlativasJson + "');");
-                                    conexionDB.cerrarConexion();
-                                } else {
-                                    System.out.println("------------------------------------------------");
-                                    System.out.println("Solo puedes ingresar una cantidad de 3 materias.");
-                                    System.out.println("------------------------------------------------");
                                 }
 
                             } catch (InputMismatchException e) {
