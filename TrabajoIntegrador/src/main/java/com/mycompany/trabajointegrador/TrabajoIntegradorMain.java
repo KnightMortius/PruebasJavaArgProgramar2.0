@@ -608,21 +608,7 @@ public class TrabajoIntegradorMain {
 
                                     informacionAlumno.setMateriasAprobadas(correlativasAprobadasInfo);
 
-                                    ResultSet invocarMateriasAprobadas = llamarEstado.executeQuery("SELECT correlativas FROM materias WHERE nombre = \"" + materia + "\"");
-
-                                    if (invocarMateriasAprobadas.next()) {
-                                        String correlativasJson = invocarMateriasAprobadas.getString("correlativas");
-
-                                        Type correlativasType = new TypeToken<List<String>>() {
-                                        }.getType();
-                                        List<String> correlativas = new Gson().fromJson(correlativasJson, correlativasType);
-
-                                        listadoMaterias.setCorrelativas((ArrayList<String>) correlativas);
-                                    }
-
                                     for (String entrada : informacionAlumno.getMateriasAprobadas()) {
-                                        System.out.println("");
-                                        System.out.println(entrada);
                                         if (entrada.equals(correlativa)) {
                                             materiaEncontrada = true;
                                         }
