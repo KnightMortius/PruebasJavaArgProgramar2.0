@@ -233,7 +233,7 @@ public class TrabajoIntegradorMain {
 
                     conexionDB.establecerConexion();
                     Statement llamarEstado = conexionDB.conectar.createStatement();
-                    ResultSet estadoAlumnos = llamarEstado.executeQuery("SELECT * FROM alumnos ORDER BY id");
+                    ResultSet estadoAlumnos = llamarEstado.executeQuery("SELECT * FROM alumnos");
 
                     while (estadoAlumnos.next()) {
 
@@ -440,7 +440,7 @@ public class TrabajoIntegradorMain {
 
                     conexionDB.establecerConexion();
                     Statement llamarEstado = conexionDB.conectar.createStatement();
-                    ResultSet estadoMaterias = llamarEstado.executeQuery("SELECT * FROM materias ORDER BY id");
+                    ResultSet estadoMaterias = llamarEstado.executeQuery("SELECT * FROM materias");
 
                     while (estadoMaterias.next()) {
 
@@ -537,7 +537,7 @@ public class TrabajoIntegradorMain {
 
                         HashMap<String, String> hmMaterias = new HashMap<>();
 
-                        ResultSet estadoLlamarMaterias = llamarEstado.executeQuery("SELECT * FROM materias ORDER BY id");
+                        ResultSet estadoLlamarMaterias = llamarEstado.executeQuery("SELECT * FROM materias");
 
                         while (estadoLlamarMaterias.next()) {
 
