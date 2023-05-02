@@ -56,6 +56,7 @@ public class TrabajoIntegradorMain {
 
             } while (cicloAlumno == 0);
 
+            //Creando Alumno dentro del SQL
             switch (seleccionAlumno) {
                 case 1 -> {
                     Conexion conexionDB = new Conexion();
@@ -159,6 +160,7 @@ public class TrabajoIntegradorMain {
                     }
                 }
 
+                //Eliminando alumno del SQL
                 case 2 -> {
                     Conexion conexionDB = new Conexion();
 
@@ -215,6 +217,8 @@ public class TrabajoIntegradorMain {
                     }
 
                 }
+                
+                //Mostrar todos los alumnos dentro del SQL
                 case 3 -> {
                     Conexion conexionDB = new Conexion();
 
@@ -254,6 +258,8 @@ public class TrabajoIntegradorMain {
                         System.out.println("Materias aprobadas: " + entry.getValue().toString().replace("[", "").replace("]", "").replace("\"", "") + "\n");
                     });
                 }
+                
+                //Salir del menu alumno
                 case 4 -> {
                     System.out.println("--------------------------------------");
                     System.out.println("  Saliendo del menu sobre alumnos...  ");
@@ -299,6 +305,7 @@ public class TrabajoIntegradorMain {
             } while (cicloMateria == 0);
 
             switch (seleccionMateria) {
+                //Creando materia dentro del SQL
                 case 1 -> {
                     Conexion conexionDB = new Conexion();
                     Materia materias = new Materia();
@@ -381,6 +388,8 @@ public class TrabajoIntegradorMain {
                     }
 
                 }
+                
+                //Eliminando materia dentro del SQL
                 case 2 -> {
                     Conexion conexionDB = new Conexion();
 
@@ -415,6 +424,8 @@ public class TrabajoIntegradorMain {
                     }
 
                 }
+                
+                //Mostrar todos las materias dentro del SQL
                 case 3 -> {
                     Conexion conexionDB = new Conexion();
 
@@ -449,6 +460,8 @@ public class TrabajoIntegradorMain {
                     }
 
                 }
+                
+                //Saliendo del menu materias
                 case 4 -> {
                     System.out.println("------------------------------------");
                     System.out.println("  Saliendo del menu de materias...  ");
@@ -776,18 +789,23 @@ public class TrabajoIntegradorMain {
 
             switch (seleccion) {
                 case 1 -> {
+                    //Menu de Alumnos
                     menuAlumno();
                 }
                 case 2 -> {
+                    //Menu de Materias
                     menuMaterias();
                 }
                 case 3 -> {
+                    //Verificacion para ver si puede inscribirse
                     verificacionInscripcion();
                 }
                 case 4 -> {
+                    //Muestra de datos de SQL
                     traerDatosSQL();
                 }
                 case 5 -> {
+                    //Cierra el programa
                     System.out.println("------------------------");
                     System.out.println("Gracias, vuelva pronto.");
                     System.out.println("------------------------");
