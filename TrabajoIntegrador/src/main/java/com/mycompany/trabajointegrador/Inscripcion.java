@@ -1,11 +1,8 @@
 package com.mycompany.trabajointegrador;
 
 import java.util.Date;
-import java.util.Scanner;
 
 public class Inscripcion {
-    private static Scanner entrada = new Scanner(System.in);
-
     Materia materia;
     Alumno alumno;
     Date fecha = new Date();

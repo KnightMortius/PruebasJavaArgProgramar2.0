@@ -3,7 +3,6 @@ package com.mycompany.trabajointegrador;
 import java.util.ArrayList;
 
 public class Alumno {
-
     String nombre;
     int legajo;
     ArrayList<String> materiasAprobadas = new ArrayList<>();

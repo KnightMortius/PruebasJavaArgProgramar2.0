@@ -1,10 +1,7 @@
 package com.mycompany.trabajointegrador;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class Materia {
-
-    private static Scanner entrada = new Scanner(System.in);
 
     public String nombre;
     public ArrayList<String> correlativas = new ArrayList<>();
